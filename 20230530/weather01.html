@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <select id="selwe" onclick=apii()>
+            <option>請選擇</option>
+            <option value="pm25">pm25</option>
+            <option value="o3">o3</option>
+        </select>
+    </div>
+    <div style="width: 400px;">
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+</body>
+<script>
+    var labels = [];
+
+    var data = {
+        labels: labels,
+        datasets: [{
+            label: '',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [],
+        }]
+    };
+
+    var config = {
+        type: 'line',
+        data: data,
+        options: {}
+    };
+    var myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+    );
+</script>
+<script>
+    async function apii() {
+        let selwe = document.getElementById("selwe").value;
+        if (selwe == "o3") {
+            let api = await fetch("https://api.waqi.info/feed/@12424/?token=f2b4138260a8cb2175566864bd35287cf6157021");
+            let ans = await api.json();
+            let arr = Object.values(ans.data.forecast.daily.o3);
+            let arravg = arr.map(item => item.avg);
+            let arrday = arr.map(item => item.day);
+            let arrname = "o3";
+            updateChart(arravg, arrday, arrname);
+            // console.log(arrday);
+        } else if (selwe == "pm25") {
+            let api = await fetch("https://api.waqi.info/feed/@12424/?token=f2b4138260a8cb2175566864bd35287cf6157021");
+            let ans = await api.json();
+            let arr = Object.values(ans.data.forecast.daily.pm25);
+            let arravg = arr.map(item => item.avg);
+            let arrday = arr.map(item => item.day);
+            let arrname = "pm25";
+            updateChart(arravg, arrday, arrname);
+            // console.log(arrday);
+        }
+    }
+    function updateChart(arravg, arrday, arrname) {
+        myChart.data.labels = arrday;
+        myChart.data.datasets[0].label = arrname;
+        myChart.data.datasets[0].data = arravg;
+        myChart.update();
+    }
+</script>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>剖析複雜的Json物件的資料數據 以空氣品質測站的回傳值為例</title>
+</head>
+
+<body>
+    <h1>即時打API，獲取即時空氣品質指標的數據</h1>
+
+    <form>
+        <label for="inputText">臭氧濃度：</label>
+        <input type="text" id="inputText1" name="inputText1"><br>
+        <label for="inputText">PM10濃度：</label>
+        <input type="text" id="inputText2" name="inputText2"><br>
+        <label for="inputText">ＰＭ2.5濃度：</label>
+        <input type="text" id="inputText3" name="inputText3"><br>
+        <button type="button" onclick="geto3()">按我</button>
+    </form>
+</body>
+<script>
+
+    const url = 'https://api.waqi.info/feed/geo:25.08;121.57/?token=9ec343e01ebbfddc01570f87c8a7bb500724cfe8';
+
+    function geto3() {
+        fetch(url)
+            .then(response => response.json())
+            .then(y => {
+                // console.log(y.data.forecast.daily.o3.map(x => x.avg));
+                // console.log(y.data.forecast.daily.pm10.map(x => x.avg));
+                // console.log(y.data.forecast.daily.pm25.map(x => x.avg));
+                document.getElementById('inputText1').value = y.data.forecast.daily.o3.map(x => x.avg);
+                document.getElementById('inputText2').value = y.data.forecast.daily.pm10.map(y => y.avg);
+                document.getElementById('inputText3').value = y.data.forecast.daily.pm25.map(z => z.avg);
+            })
+    }
+</script>
+
+</html>

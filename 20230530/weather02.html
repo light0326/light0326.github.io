@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    <title>天氣資訊圖表</title>
+</head>
+
+<body>
+    <select id="select_weather" onclick="weather_picture()">
+        <option selected>請選擇汙染物</option>
+        <option value="O3">O3</option>
+        <option value="pm25">pm2.5</option>
+        <option value="pm10">pm10</option>
+    </select>
+    <div id="main" style="width: 600px;height:400px;"></div>
+
+</body>
+<script>
+    var myChart = echarts.init(document.getElementById('main'), 'dark');
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: ''
+        },
+        tooltip: {},
+        legend: {
+            data: ['']
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [
+            {
+                name: '销量',
+                type: 'line',
+                data: []
+            }
+        ]
+    };
+    myChart.setOption(option);
+    async function weather_picture() {
+        const select_value = document.getElementById("select_weather").value;
+        const api = "https://api.waqi.info/feed/@12424/?token=f2b4138260a8cb2175566864bd35287cf6157021";
+        const api_fetch = await fetch(api);
+        const api_ans = await api_fetch.json();
+        if (select_value == "O3") {
+            const avg_map = Object.values(api_ans.data.forecast.daily.o3).map(item => item.avg);
+            const day_map = Object.values(api_ans.data.forecast.daily.o3).map(item => item.day);
+            update(avg_map, day_map, select_value)
+        } else if (select_value == "pm25") {
+            const avg_map = Object.values(api_ans.data.forecast.daily.pm25).map(item => item.avg);
+            const day_map = Object.values(api_ans.data.forecast.daily.pm25).map(item => item.day);
+            update(avg_map, day_map, select_value)
+        } else if (select_value == "pm10") {
+            const avg_map = Object.values(api_ans.data.forecast.daily.pm10).map(item => item.avg);
+            const day_map = Object.values(api_ans.data.forecast.daily.pm10).map(item => item.day);
+            update(avg_map, day_map, select_value)
+        }
+    }
+    async function update(avg_map, day_map, select_value) {
+        var option = {
+            title: {
+                text: ''
+            },
+            tooltip: {},
+            legend: {
+                data: [select_value]
+            },
+            xAxis: {
+                data: day_map
+            },
+            yAxis: {},
+            series: [
+                {
+                    name: select_value,
+                    type: 'line',
+                    data: avg_map
+                }
+            ]
+        };
+        myChart.setOption(option);
+    }
+</script>
+
+</html>

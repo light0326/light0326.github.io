@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>經緯度座標示範</title>
+</head>
+
+<body>
+    <h1>經緯度座標示範</h1>
+
+    <h3>透過 IP 獲取經緯度座標：</h3>
+    <p id="ipAddress">請按下按鈕以獲取IP地址</p>
+    <p id="ipCoordinates">正在獲取經緯度座標...</p>
+
+    <h3>透過瀏覽器獲取經緯度座標：</h3>
+    <p id="browserCoordinates">正在獲取經緯度座標...</p>
+
+    <script>
+        // 當頁面載入完成後執行
+        window.onload = function () {
+            // 抓取 IP 經緯度座標
+            getIPCoordinates();
+            // 抓取瀏覽器經緯度座標
+            getBrowserCoordinates();
+        };
+
+        function getIPCoordinates() {
+            // 發送 GET 請求獲取 IP 經緯度座標
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    const ipCoordinates = `經度：${data.longitude}，緯度：${data.latitude}`;
+                    document.getElementById('ipAddress').textContent = 'IP:' + data.ip;
+                    document.getElementById('ipCoordinates').textContent = ipCoordinates;
+                    console.log('IP位址定位的座標：' + data.latitude, data.longitude)
+                })
+                .catch(error => {
+                    console.log('發生錯誤：', error);
+                    document.getElementById('ipCoordinates').textContent = '無法獲取經緯度座標';
+                });
+        }
+
+        function getBrowserCoordinates() {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const browserCoordinates = `經度：${position.coords.longitude}，緯度：${position.coords.latitude}`;
+                        document.getElementById('browserCoordinates').textContent = browserCoordinates;
+                        console.log('蘭覽器定位的座標：' + position.coords.latitude, position.coords.longitude)
+                    },
+                    error => {
+                        console.log('發生錯誤：', error);
+                        document.getElementById('browserCoordinates').textContent = '無法獲取經緯度座標';
+                    }
+                );
+            } else {
+                document.getElementById('browserCoordinates').textContent = '瀏覽器不支援地理位置定位';
+            }
+        }
+    </script>
+</body>
+
+</html>

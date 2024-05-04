@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>經緯度座標示範</title>
+</head>
+
+<body>
+    <h1>經緯度座標示範</h1>
+
+    <button onclick="getIPCoordinates()">獲取 IP 經緯度座標</button>
+    <button onclick="openGoogleMap(window.latitude, window.longitude)">打開地圖看座標位置</button><br>
+
+    <p id="ipAddress">請先按下左邊的按鈕以獲取IP地址</p>
+    <p id="ipCoordinates"></p><br>
+    <button onclick="getBrowserCoordinates()">獲取瀏覽器經緯度座標</button>
+    <button onclick="openGoogleMap(window.latitude, window.longitude)">打開地圖看座標位置</button>
+    <p id="browserCoordinates"></p>
+
+    <script>
+        // let latitude = null;
+        // let longitude = null;
+        function getIPCoordinates() {
+            // 發送 GET 請求獲取 IP 經緯度座標
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    const ipCoordinates = `經度：${data.longitude}，緯度：${data.latitude}`;
+                    document.getElementById('ipAddress').textContent = 'IP:' + data.ip;
+                    document.getElementById('ipCoordinates').textContent = ipCoordinates;
+                    window.latitude = data.latitude;
+                    window.longitude = data.longitude;
+                    // openGoogleMap(data.latitude, data.longitude);
+                })
+                .catch(error => {
+                    console.log('發生錯誤：', error);
+                    document.getElementById('ipCoordinates').textContent = '無法獲取經緯度座標';
+                });
+        }
+
+        function getBrowserCoordinates() {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const browserCoordinates = `經度：${position.coords.longitude}，緯度：${position.coords.latitude}`;
+                        document.getElementById('browserCoordinates').textContent = browserCoordinates;
+                        window.latitude = position.coords.latitude;
+                        window.longitude = position.coords.longitude;
+                    },
+                    error => {
+                        console.log('發生錯誤：', error);
+                        document.getElementById('browserCoordinates').textContent = '無法獲取經緯度座標';
+                    }
+                );
+            } else {
+                document.getElementById('browserCoordinates').textContent = '瀏覽器不支援地理位置定位';
+            }
+        }
+
+        function openGoogleMap(latitude, longitude) {
+            const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            window.open(url, " _blank");
+        } </script>
+</body>
+
+</html>
